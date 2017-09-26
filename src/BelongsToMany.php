@@ -9,9 +9,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class BelongsToMany extends BelongsToManyEloquent {
 
-
-
-
     public function sync($ids, $detaching = true)
     {
         $baseEventData = $this->getBaseEventData();
