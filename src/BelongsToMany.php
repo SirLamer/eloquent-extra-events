@@ -11,58 +11,64 @@ class BelongsToMany extends BelongsToManyEloquent {
 
     public function sync($ids, $detaching = true)
     {
-        $baseEventData = $this->getBaseEventData();
+        $eventData = $this->getBaseEventData($ids);
 
-        $eventData = array_merge($baseEventData, ['related_ids' => $this->processIds($ids)]);
-        event('eloquent.syncing: ' . $baseEventData['parent_model'], str_contains(app()->VERSION(), ['5.2.', '5.3.']) ? [$eventData] : $eventData);
+        $class = get_class($eventData['parent']);
+
+        event('eloquent.syncing: ' . $class, str_contains(app()->VERSION(), ['5.2.', '5.3.']) ? [$eventData] : $eventData);
 
         $changes = parent::sync($ids, $detaching);
 
-        $eventData = array_merge($baseEventData, ['changes' => $changes]);
-        event('eloquent.synced: ' . $baseEventData['parent_model'], str_contains(app()->VERSION(), ['5.2.', '5.3.']) ? [$eventData] : $eventData);
+        $eventData['changes'] = $changes;
+        ;
+        event('eloquent.synced: ' . $class, str_contains(app()->VERSION(), ['5.2.', '5.3.']) ? [$eventData] : $eventData);
 
         return $changes;
     }
 
-    public function attach($id, array $attributes = [], $touch = true)
+    public function attach($ids, array $attributes = [], $touch = true)
     {
-        $baseEventData = $this->getBaseEventData();
+        $eventData = $this->getBaseEventData($ids);
 
-        $eventData = array_merge($baseEventData, ['related_ids' => $this->processIds($id)]);
+        $class = get_class($eventData['parent']);
 
-        event('eloquent.attaching: ' . $baseEventData['parent_model'], str_contains(app()->VERSION(), ['5.2.', '5.3.']) ? [$eventData] : $eventData);
+        event('eloquent.attaching: ' . $class, str_contains(app()->VERSION(), ['5.2.', '5.3.']) ? [$eventData] : $eventData);
 
-        parent::attach($id, $attributes, $touch);
+        parent::attach($ids, $attributes, $touch);
 
-        event('eloquent.attached: ' . $baseEventData['parent_model'], str_contains(app()->VERSION(), ['5.2.', '5.3.']) ? [$eventData] : $eventData);
+        event('eloquent.attached: ' . $class, str_contains(app()->VERSION(), ['5.2.', '5.3.']) ? [$eventData] : $eventData);
     }
 
 
     public function detach($ids = [], $touch = true)
     {
-        $baseEventData = $this->getBaseEventData();
+        $eventData = $this->getBaseEventData($ids);
 
-        $eventData = array_merge($baseEventData, ['related_ids' => $this->processIds($ids)]);
-        event('eloquent.detaching: ' . $baseEventData['parent_model'], str_contains(app()->VERSION(), ['5.2.', '5.3.']) ? [$eventData] : $eventData);
+        $class = get_class($eventData['parent']);
+
+        event('eloquent.detaching: ' . $class, str_contains(app()->VERSION(), ['5.2.', '5.3.']) ? [$eventData] : $eventData);
 
         $results = parent::detach($ids, $touch);
 
-        $eventData = array_merge($baseEventData, ['related_ids' => $this->processIds($ids), 'results' => $results]);
-        event('eloquent.detached: ' . $baseEventData['parent_model'], str_contains(app()->VERSION(), ['5.2.', '5.3.']) ? [$eventData] : $eventData);
+        $eventData['results'] = $results;
+        event('eloquent.detached: ' . $class, str_contains(app()->VERSION(), ['5.2.', '5.3.']) ? [$eventData] : $eventData);
 
         return $results;
     }
 
-    protected function getBaseEventData()
+    protected function getBaseEventData($ids)
     {
-        return array(
-            'parent_model' => get_class($this->getParent()),
-            'parent_id' => $this->getParent()->getKey(),
-            'related_model' => get_class($this->getRelated())
-        );
+        return [
+            'parent' => $this->getParent(),
+            'relationship' => $this->getRelationName(),
+            'related' => [
+                'class' => get_class($this->getRelated()),
+                'ids' => static::processIds($ids)
+            ]
+        ];
     }
 
-    public function processIds($ids)
+    protected static function processIds($ids)
     {
         if ($ids instanceof Collection) {
             $ids = $ids->modelKeys();
