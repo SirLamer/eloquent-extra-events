@@ -64,10 +64,8 @@ class BelongsToMany extends BelongsToManyEloquent {
         return [
             'parent' => $this->getParent(),
             'relationship' => $this->getRelationName(),
-            'related' => [
-                'class' => get_class($this->getRelated()),
-                'ids' => static::processIds($ids)
-            ]
+            'related' => get_class($this->getRelated()),
+            'ids' => static::processIds($ids)
         ];
     }
 
