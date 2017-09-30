@@ -72,11 +72,11 @@ class BelongsToMany extends BelongsToManyEloquent {
     protected static function processIds($ids)
     {
         if ($ids instanceof Collection) {
-            $ids = $ids->modelKeys();
+            return $ids->modelKeys();
         }
 
         if ($ids instanceof Model) {
-            $ids = $ids->getKey();
+            return $ids->getKey();
         }
 
         return (array) $ids;
