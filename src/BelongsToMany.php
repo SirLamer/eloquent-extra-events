@@ -76,7 +76,7 @@ class BelongsToMany extends BelongsToManyEloquent {
             return $ids->getKey();
         }
 
-        return (array) $ids;
+        return collect($ids)->toArray();
     }
 
 }
