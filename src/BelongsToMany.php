@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany as BelongsToManyEloquen
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
-
 class BelongsToMany extends BelongsToManyEloquent {
 
     public function sync($ids, $detaching = true)
@@ -15,13 +14,13 @@ class BelongsToMany extends BelongsToManyEloquent {
 
         $class = get_class($eventData['parent']);
 
-        event('eloquent.syncing: ' . $class, str_contains(app()->VERSION(), ['5.2.', '5.3.']) ? [$eventData] : $eventData);
+        event('eloquent.syncing: ' . $class, $eventData);
 
         $changes = parent::sync($ids, $detaching);
 
         $eventData['changes'] = $changes;
         ;
-        event('eloquent.synced: ' . $class, str_contains(app()->VERSION(), ['5.2.', '5.3.']) ? [$eventData] : $eventData);
+        event('eloquent.synced: ' . $class, $eventData);
 
         return $changes;
     }
@@ -32,11 +31,11 @@ class BelongsToMany extends BelongsToManyEloquent {
 
         $class = get_class($eventData['parent']);
 
-        event('eloquent.attaching: ' . $class, str_contains(app()->VERSION(), ['5.2.', '5.3.']) ? [$eventData] : $eventData);
+        event('eloquent.attaching: ' . $class, $eventData);
 
         parent::attach($ids, $attributes, $touch);
 
-        event('eloquent.attached: ' . $class, str_contains(app()->VERSION(), ['5.2.', '5.3.']) ? [$eventData] : $eventData);
+        event('eloquent.attached: ' . $class, $eventData);
     }
 
 
@@ -46,12 +45,12 @@ class BelongsToMany extends BelongsToManyEloquent {
 
         $class = get_class($eventData['parent']);
 
-        event('eloquent.detaching: ' . $class, str_contains(app()->VERSION(), ['5.2.', '5.3.']) ? [$eventData] : $eventData);
+        event('eloquent.detaching: ' . $class, $eventData);
 
         $results = parent::detach($ids, $touch);
 
         $eventData['results'] = $results;
-        event('eloquent.detached: ' . $class, str_contains(app()->VERSION(), ['5.2.', '5.3.']) ? [$eventData] : $eventData);
+        event('eloquent.detached: ' . $class, $eventData);
 
         return $results;
     }

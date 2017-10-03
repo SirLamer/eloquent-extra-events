@@ -7,6 +7,8 @@
 [![Latest Unstable Version](https://poser.pugx.org/neylsongularte/eloquent-extra-events/v/unstable)](https://packagist.org/packages/neylsongularte/eloquent-extra-events)
 [![License](https://poser.pugx.org/neylsongularte/eloquent-extra-events/license)](https://packagist.org/packages/neylsongularte/eloquent-extra-events)
 
+Requires Laravel 5.5.
+
 Install:
 
 `composer require neylsongularte/eloquent-extra-events`
@@ -27,12 +29,8 @@ Events:
 Listen events in `App\Providers\AppServiceProvider`:
 
 ```
-In 5.2.x and 5.3.x:
-Event::listen('eloquent.syncing*', function (array $eventData) {
-});
-
-In 5.4.x:
 Event::listen('eloquent.syncing*', function ($eventName, array $eventData) {
+    ///
 });
 
 ```
