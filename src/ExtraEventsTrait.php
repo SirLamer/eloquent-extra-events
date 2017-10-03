@@ -2,32 +2,42 @@
 
 namespace NeylsonGularte\EloquentExtraEvents;
 
-
 // Trait for models
 trait ExtraEventsTrait {
 
-
-
-    public function belongsToMany($related, $table = null, $foreignKey = null, $otherKey = null, $relation = null)
+    /**
+     * Define a many-to-many relationship.
+     *
+     * @param  string  $related
+     * @param  string  $table
+     * @param  string  $foreignPivotKey
+     * @param  string  $relatedPivotKey
+     * @param  string  $parentKey
+     * @param  string  $relatedKey
+     * @param  string  $relationName
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function belongsToMany($related, $table = null, $foreignPivotKey = null,
+                                  $relatedPivotKey = null, $parentKey = null,
+                                  $relatedKey = null, $relationName = null)
     {
 
-        $belongsToMany = parent::belongsToMany($related, $table, $foreignKey, $otherKey, $relation);
+        $belongsToMany = parent::belongsToMany($related, $table, $foreignPivotKey,
+            $relatedPivotKey, $parentKey,
+            $relatedKey, $relationName);
 
         $query = $belongsToMany->getQuery()->getModel()->newQuery();
         $parent = $belongsToMany->getParent();
         $table = $belongsToMany->getTable();
 
-        if(str_contains(app()->VERSION(), ['5.2.', '5.3.'])) {
-            $foreignKey = explode('.', $belongsToMany->getForeignKey())[1];
-            $otherKey = explode('.', $belongsToMany->getOtherKey())[1];
-        } else {
-            $foreignKey = explode('.', $belongsToMany->getQualifiedForeignKeyName())[1];
-            $otherKey = explode('.', $belongsToMany->getQualifiedRelatedKeyName())[1];
-        }
+        $foreignPivotKey = explode('.', $belongsToMany->getQualifiedForeignKeyName())[1];
+        $relatedPivotKey = explode('.', $belongsToMany->getQualifiedRelatedKeyName())[1];
 
-        $relation = $belongsToMany->getRelationName();
+        $relationName = $belongsToMany->getRelationName();
 
 
-        return new BelongsToMany($query, $parent, $table, $foreignKey, $otherKey, $relation);
+        return new BelongsToMany($query, $parent, $table, $foreignPivotKey,
+            $relatedPivotKey, $parentKey,
+            $relatedKey, $relationName);
     }
 }
