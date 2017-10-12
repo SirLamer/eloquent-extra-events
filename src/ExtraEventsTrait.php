@@ -30,8 +30,8 @@ trait ExtraEventsTrait {
         $parent = $belongsToMany->getParent();
         $table = $belongsToMany->getTable();
 
-        $foreignPivotKey = explode('.', $belongsToMany->getQualifiedForeignKeyName())[1];
-        $relatedPivotKey = explode('.', $belongsToMany->getQualifiedRelatedKeyName())[1];
+        $foreignPivotKey = explode('.', $belongsToMany->getQualifiedForeignPivotKeyName())[1];
+        $relatedPivotKey = explode('.', $belongsToMany->getQualifiedRelatedPivotKeyName())[1];
 
         $relationName = $belongsToMany->getRelationName();
 
