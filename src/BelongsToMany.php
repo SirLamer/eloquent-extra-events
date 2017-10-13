@@ -11,6 +11,7 @@ class BelongsToMany extends BelongsToManyEloquent {
     public function sync($ids, $detaching = true)
     {
         $eventData = $this->getBaseEventData($ids);
+        $eventData['detaching'] = $detaching;
 
         $class = get_class($eventData['parent']);
 
@@ -49,7 +50,7 @@ class BelongsToMany extends BelongsToManyEloquent {
 
         $results = parent::detach($ids, $touch);
 
-        $eventData['results'] = $results;
+        $eventData['count'] = $results;
         event('eloquent.detached: ' . $class, $eventData);
 
         return $results;
