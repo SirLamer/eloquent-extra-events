@@ -11,6 +11,7 @@ class BelongsToMany extends BelongsToManyEloquent {
     public function sync($ids, $detaching = true)
     {
         $eventData = $this->getBaseEventData($ids);
+        $eventData['detaching'] = $detaching;
 
         $class = get_class($eventData['parent']);
 
