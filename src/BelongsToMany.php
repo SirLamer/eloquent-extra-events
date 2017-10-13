@@ -50,7 +50,7 @@ class BelongsToMany extends BelongsToManyEloquent {
 
         $results = parent::detach($ids, $touch);
 
-        $eventData['results'] = $results;
+        $eventData['count'] = $results;
         event('eloquent.detached: ' . $class, $eventData);
 
         return $results;
