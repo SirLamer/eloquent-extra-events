@@ -8,7 +8,7 @@ trait ExtraEventsTrait {
     /**
      * @var array The relationship event observables to be available through Eloquent's event dispatcher registration.
      */
-    private static $relationshipEventObservables = [
+    protected static $relationshipEventObservables = [
         'syncing',
         'synced',
         'attaching',
