@@ -6,7 +6,19 @@ namespace NeylsonGularte\EloquentExtraEvents;
 trait ExtraEventsTrait {
 
     /**
-     * Define a many-to-many relationship.
+     * @var array The relationship event observables to be available through Eloquent's event dispatcher registration.
+     */
+    private static $relationshipEventObservables = [
+        'syncing',
+        'synced',
+        'attaching',
+        'attached',
+        'detaching',
+        'detached',
+    ];
+
+    /**
+     * {@inheritdoc} Returns a modified BelongsToMany object with relationship events included.
      *
      * @param  string  $related
      * @param  string  $table
@@ -117,5 +129,18 @@ trait ExtraEventsTrait {
     public static function detached($callback)
     {
         static::registerModelEvent('detached', $callback);
+    }
+
+    /**
+     * {@inheritdoc} Injects the necessary relationship events in to the default observable list.
+     *
+     * @return array
+     */
+    public function getObservableEvents()
+    {
+        return array_merge(
+            parent::getObservableEvents(),
+            static::$relationshipEventObservables
+        );
     }
 }
