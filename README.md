@@ -10,10 +10,9 @@
 [![License](https://poser.pugx.org/neylsongularte/eloquent-extra-events/license)](https://packagist.org/packages/neylsongularte/eloquent-extra-events)
 
 ## Dependencies
+- Laravel 5.5.*
 
-Requires Laravel 5.5.
-
-## Setup
+## Installation
 ```bash
 composer require neylsongularte/eloquent-extra-events
 ```
@@ -137,7 +136,6 @@ namespace App;
 
 use Auth;
 use App\Events\Broadcasts;
-use Illuminate\Database\Eloquent\Model;
 
 class UserObserver
 {
@@ -145,14 +143,14 @@ class UserObserver
 
     ///
 
-    public function attached(Model $parent, $relationship, $related, $ids)
+    public function attached(BaseModel $parent, $relationship, $related, $ids)
     {
         if (in_array($relationship, static::BROADCAST_RELATIONSHIPS)) {
             broadcast(new Broadcasts\User\Attached($parent, $relationship, $related, $ids))->toOthers();
         }
     }
 
-    public function detached(Model $parent, $relationship, $related, $ids, $count)
+    public function detached(BaseModel $parent, $relationship, $related, $ids, $count)
     {
         if (in_array($relationship, static::BROADCAST_RELATIONSHIPS)) {
             broadcast(new Broadcasts\User\Detached($parent, $relationship, $related, $ids))->toOthers();
