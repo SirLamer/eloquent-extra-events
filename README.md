@@ -148,14 +148,14 @@ class UserObserver
     public function attached(Model $parent, $relationship, $related, $ids)
     {
         if (in_array($relationship, static::BROADCAST_RELATIONSHIPS)) {
-            broadcast(new Broadcasts\Project\Attached($parent, $relationship, $related, $ids))->toOthers();
+            broadcast(new Broadcasts\User\Attached($parent, $relationship, $related, $ids))->toOthers();
         }
     }
 
     public function detached(Model $parent, $relationship, $related, $ids, $count)
     {
         if (in_array($relationship, static::BROADCAST_RELATIONSHIPS)) {
-            broadcast(new Broadcasts\Project\Detached($parent, $relationship, $related, $ids))->toOthers();
+            broadcast(new Broadcasts\User\Detached($parent, $relationship, $related, $ids))->toOthers();
         }
     }
 }
