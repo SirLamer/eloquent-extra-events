@@ -14,31 +14,43 @@ trait ExtraEventsTrait {
      * @param  string  $relatedPivotKey
      * @param  string  $parentKey
      * @param  string  $relatedKey
-     * @param  string  $relationName
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * @param  string  $relation
+     * @return BelongsToMany
      */
-    public function belongsToMany($related, $table = null, $foreignPivotKey = null,
-                                  $relatedPivotKey = null, $parentKey = null,
-                                  $relatedKey = null, $relationName = null)
+    public function belongsToMany($related, $table = null, $foreignPivotKey = null, $relatedPivotKey = null,
+                                  $parentKey = null, $relatedKey = null, $relation = null)
     {
+        // Initialization copied from Illuminate\Database\Eloquent\Concerns\HasRelationships
+        // From version 5.5.14
 
-        $belongsToMany = parent::belongsToMany($related, $table, $foreignPivotKey,
-            $relatedPivotKey, $parentKey,
-            $relatedKey, $relationName);
+        // If no relationship name was passed, we will pull backtraces to get the
+        // name of the calling function. We will use that function name as the
+        // title of this relation since that is a great convention to apply.
+        if (is_null($relation)) {
+            $relation = $this->guessBelongsToManyRelation();
+        }
 
-        $query = $belongsToMany->getQuery()->getModel()->newQuery();
-        $parent = $belongsToMany->getParent();
-        $table = $belongsToMany->getTable();
+        // First, we'll need to determine the foreign key and "other key" for the
+        // relationship. Once we have determined the keys we'll make the query
+        // instances as well as the relationship instances we need for this.
+        $instance = $this->newRelatedInstance($related);
 
-        $foreignPivotKey = explode('.', $belongsToMany->getQualifiedForeignPivotKeyName())[1];
-        $relatedPivotKey = explode('.', $belongsToMany->getQualifiedRelatedPivotKeyName())[1];
+        $foreignPivotKey = $foreignPivotKey ?: $this->getForeignKey();
 
-        $relationName = $belongsToMany->getRelationName();
+        $relatedPivotKey = $relatedPivotKey ?: $instance->getForeignKey();
 
+        // If no table name was provided, we can guess it by concatenating the two
+        // models using underscores in alphabetical order. The two model names
+        // are transformed to snake case from their default CamelCase also.
+        if (is_null($table)) {
+            $table = $this->joiningTable($related);
+        }
 
-        return new BelongsToMany($query, $parent, $table, $foreignPivotKey,
-            $relatedPivotKey, $parentKey,
-            $relatedKey, $relationName);
+        return new BelongsToMany(
+            $instance->newQuery(), $this, $table, $foreignPivotKey,
+            $relatedPivotKey, $parentKey ?: $this->getKeyName(),
+            $relatedKey ?: $instance->getKeyName(), $relation
+        );
     }
 
     /**
